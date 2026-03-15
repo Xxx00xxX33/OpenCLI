@@ -1,7 +1,7 @@
 ---
 name: opencli
 description: "OpenCLI — Make any website your CLI. Zero risk, AI-powered, reuse Chrome login."
-version: 0.1.0
+version: 0.4.0
 author: jackwener
 tags: [cli, browser, web, mcp, playwright, bilibili, zhihu, twitter, github, v2ex, hackernews, reddit, xiaohongshu, xueqiu, AI, agent]
 ---
@@ -49,6 +49,9 @@ opencli bilibili favorite                 # 我的收藏
 opencli bilibili history --limit 20       # 观看历史
 opencli bilibili feed --limit 10          # 动态时间线
 opencli bilibili user-videos --uid 12345  # 用户投稿
+opencli bilibili subtitle --bvid BV1xxx   # 获取视频字幕 (支持 --lang zh-CN)
+opencli bilibili dynamic --limit 10       # 动态
+opencli bilibili ranking --limit 10       # 排行榜
 
 # 知乎 (browser)
 opencli zhihu hot --limit 10             # 知乎热榜
@@ -59,6 +62,8 @@ opencli zhihu question --id 34816524     # 问题详情和回答
 opencli xiaohongshu search --keyword "美食"  # 搜索笔记
 opencli xiaohongshu notifications             # 通知（mentions/likes/connections）
 opencli xiaohongshu feed --limit 10           # 推荐 Feed
+opencli xiaohongshu me                         # 我的信息
+opencli xiaohongshu user --uid xxx             # 用户主页
 
 # 雪球 Xueqiu (browser)
 opencli xueqiu hot-stock --limit 10      # 雪球热门股票榜
@@ -73,10 +78,16 @@ opencli github search --keyword "cli"    # 搜索仓库
 # Twitter/X (browser)
 opencli twitter trending --limit 10      # 热门话题
 opencli twitter bookmarks --limit 20     # 获取收藏的书签推文
+opencli twitter search --keyword "AI"    # 搜索推文
+opencli twitter profile --username elonmusk  # 用户资料
+opencli twitter timeline --limit 20      # 时间线
 
 # Reddit (browser)
 opencli reddit hot --limit 10            # 热门帖子
 opencli reddit hot --subreddit programming  # 指定子版块
+opencli reddit frontpage --limit 10      # 首页
+opencli reddit search --keyword "AI"     # 搜索
+opencli reddit subreddit --name rust     # 子版块浏览
 
 # V2EX (public)
 opencli v2ex hot --limit 10              # 热门话题
@@ -134,6 +145,9 @@ opencli generate <url> --goal "hot"
 
 # Strategy Cascade: auto-probe PUBLIC → COOKIE → HEADER
 opencli cascade <api-url>
+
+# Explore with interactive fuzzing (click buttons to trigger lazy APIs)
+opencli explore <url> --auto --click "字幕,CC,评论"
 
 # Verify: smoke-test a generated adapter
 opencli verify <site/name> --smoke
