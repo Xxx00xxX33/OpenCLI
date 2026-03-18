@@ -43,6 +43,7 @@ OpenCLI 将任何网站变成命令行工具 — B站、知乎、小红书、Twi
 > **⚠️ 重要**：大多数命令复用你的 Chrome 登录状态。运行命令前，你必须已在 Chrome 中打开目标网站并完成登录。如果获取到空数据或报错，请先检查你的浏览器登录状态。
 
 OpenCLI 通过 Playwright MCP Bridge 扩展与你的浏览器通信。
+它会优先复用本地或全局已安装的 `@playwright/mcp`，如果没有嗅探到可用 MCP server，则会自动回退到 `npx -y @playwright/mcp@latest` 启动。
 
 ### Playwright MCP Bridge 扩展配置
 

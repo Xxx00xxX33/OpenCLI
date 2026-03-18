@@ -13,7 +13,7 @@ export type { ConnectFailureKind, ConnectFailureInput } from './errors.js';
 // Test-only helpers — exposed for unit tests
 import { createJsonRpcRequest } from './mcp.js';
 import { extractTabEntries, diffTabIndexes, appendLimited } from './tabs.js';
-import { buildMcpArgs, findMcpServerPath, resetMcpServerPathCache, setMcpDiscoveryTestHooks } from './discover.js';
+import { buildMcpArgs, buildMcpLaunchSpec, findMcpServerPath, resetMcpServerPathCache, setMcpDiscoveryTestHooks } from './discover.js';
 import { withTimeoutMs } from '../runtime.js';
 
 export const __test__ = {
@@ -22,6 +22,7 @@ export const __test__ = {
   diffTabIndexes,
   appendLimited,
   buildMcpArgs,
+  buildMcpLaunchSpec,
   findMcpServerPath,
   resetMcpServerPathCache,
   setMcpDiscoveryTestHooks,

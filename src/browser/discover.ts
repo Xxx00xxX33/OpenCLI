@@ -111,16 +111,41 @@ export function findMcpServerPath(): string | null {
   return _cachedMcpServerPath;
 }
 
-export function buildMcpArgs(input: { mcpPath: string; executablePath?: string | null }): string[] {
-  const args = [input.mcpPath];
+function buildRuntimeArgs(input?: { executablePath?: string | null }): string[] {
+  const args: string[] = [];
   if (!process.env.CI) {
     // Local: always connect to user's running Chrome via MCP Bridge extension
     args.push('--extension');
   }
   // CI: standalone mode — @playwright/mcp launches its own browser (headed by default).
   // xvfb provides a virtual display for headed mode in GitHub Actions.
-  if (input.executablePath) {
+  if (input?.executablePath) {
     args.push('--executable-path', input.executablePath);
   }
   return args;
+}
+
+export function buildMcpArgs(input: { mcpPath: string; executablePath?: string | null }): string[] {
+  return [input.mcpPath, ...buildRuntimeArgs(input)];
+}
+
+export function buildMcpLaunchSpec(input: { mcpPath?: string | null; executablePath?: string | null }): {
+  command: string;
+  args: string[];
+  usedNpxFallback: boolean;
+} {
+  const runtimeArgs = buildRuntimeArgs(input);
+  if (input.mcpPath) {
+    return {
+      command: 'node',
+      args: [input.mcpPath, ...runtimeArgs],
+      usedNpxFallback: false,
+    };
+  }
+
+  return {
+    command: 'npx',
+    args: ['-y', '@playwright/mcp@latest', ...runtimeArgs],
+    usedNpxFallback: true,
+  };
 }

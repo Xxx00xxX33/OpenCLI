@@ -9,7 +9,7 @@ import { withTimeoutMs, DEFAULT_BROWSER_CONNECT_TIMEOUT } from '../runtime.js';
 import { PKG_VERSION } from '../version.js';
 import { Page } from './page.js';
 import { getTokenFingerprint, formatBrowserConnectError, inferConnectFailureKind } from './errors.js';
-import { findMcpServerPath, buildMcpArgs } from './discover.js';
+import { findMcpServerPath, buildMcpLaunchSpec } from './discover.js';
 import { extractTabIdentities, extractTabEntries, diffTabIndexes, appendLimited } from './tabs.js';
 
 const STDERR_BUFFER_LIMIT = 16 * 1024;
@@ -105,7 +105,6 @@ export class PlaywrightMCP {
     if (this._state === 'closed') throw new Error('Playwright MCP session is closed');
 
     const mcpPath = findMcpServerPath();
-    if (!mcpPath) throw new Error('Playwright MCP server not found. Install: npm install -D @playwright/mcp');
 
     PlaywrightMCP._registerGlobalCleanup();
     PlaywrightMCP._activeInsts.add(this);
@@ -154,17 +153,20 @@ export class PlaywrightMCP {
         }));
       }, timeout * 1000);
 
-      const mcpArgs = buildMcpArgs({
+      const launchSpec = buildMcpLaunchSpec({
         mcpPath,
         executablePath: process.env.OPENCLI_BROWSER_EXECUTABLE_PATH,
       });
       if (process.env.OPENCLI_VERBOSE) {
         console.error(`[opencli] Mode: ${useExtension ? 'extension' : 'standalone'}`);
         if (useExtension) console.error(`[opencli] Extension token: fingerprint ${tokenFingerprint}`);
+        if (launchSpec.usedNpxFallback) {
+          console.error('[opencli] Playwright MCP not found locally; bootstrapping via npx @playwright/mcp@latest');
+        }
       }
-      debugLog(`Spawning node ${mcpArgs.join(' ')}`);
+      debugLog(`Spawning ${launchSpec.command} ${launchSpec.args.join(' ')}`);
 
-      this._proc = spawn('node', mcpArgs, {
+      this._proc = spawn(launchSpec.command, launchSpec.args, {
         stdio: ['pipe', 'pipe', 'pipe'],
         env: { ...process.env },
       });

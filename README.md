@@ -44,6 +44,7 @@ A CLI tool that turns **any website** into a command-line interface — Bilibili
 > **⚠️ Important**: Browser commands reuse your Chrome login session. You must be logged into the target website in Chrome before running commands. If you get empty data or errors, check your login status first.
 
 OpenCLI connects to your browser through the Playwright MCP Bridge extension.
+It prefers an existing local/global `@playwright/mcp` install and falls back to `npx -y @playwright/mcp@latest` automatically when no local MCP server is found.
 
 ### Playwright MCP Bridge Extension Setup
 

@@ -112,6 +112,47 @@ describe('browser helpers', () => {
     }
   });
 
+  it('builds a direct node launch spec when a local MCP path is available', () => {
+    const savedCI = process.env.CI;
+    delete process.env.CI;
+    try {
+      expect(__test__.buildMcpLaunchSpec({
+        mcpPath: '/tmp/cli.js',
+        executablePath: '/usr/bin/google-chrome',
+      })).toEqual({
+        command: 'node',
+        args: ['/tmp/cli.js', '--extension', '--executable-path', '/usr/bin/google-chrome'],
+        usedNpxFallback: false,
+      });
+    } finally {
+      if (savedCI !== undefined) {
+        process.env.CI = savedCI;
+      } else {
+        delete process.env.CI;
+      }
+    }
+  });
+
+  it('falls back to npx bootstrap when no MCP path is available', () => {
+    const savedCI = process.env.CI;
+    delete process.env.CI;
+    try {
+      expect(__test__.buildMcpLaunchSpec({
+        mcpPath: null,
+      })).toEqual({
+        command: 'npx',
+        args: ['-y', '@playwright/mcp@latest', '--extension'],
+        usedNpxFallback: true,
+      });
+    } finally {
+      if (savedCI !== undefined) {
+        process.env.CI = savedCI;
+      } else {
+        delete process.env.CI;
+      }
+    }
+  });
+
   it('times out slow promises', async () => {
     await expect(__test__.withTimeoutMs(new Promise(() => {}), 10, 'timeout')).rejects.toThrow('timeout');
   });
