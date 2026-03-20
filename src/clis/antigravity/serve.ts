@@ -100,18 +100,20 @@ async function startNewConversation(page: IPage): Promise<void> {
  * Switch the active model in Antigravity UI.
  */
 async function switchModel(page: IPage, anthropicModelId: string): Promise<void> {
-  // Map standard Anthropic model IDs to Antigravity UI names
-  let targetName = 'claude 3.5 sonnet'; // Default fallback
+  // Map standard model IDs to Antigravity UI names based on actual UI
+  let targetName = 'claude sonnet 4.6'; // Default fallback
   const id = anthropicModelId.toLowerCase();
   
-  if (id.includes('3-7-sonnet') || id.includes('3.7-sonnet')) {
-    targetName = 'claude 3.7 sonnet';
-  } else if (id.includes('3-5-sonnet') || id.includes('3.5-sonnet')) {
-    targetName = 'claude 3.5 sonnet';
-  } else if (id.includes('3-5-haiku') || id.includes('3.5-haiku')) {
-    targetName = 'claude 3.5 haiku';
+  if (id.includes('sonnet')) {
+    targetName = 'claude sonnet 4.6';
   } else if (id.includes('opus')) {
-    targetName = 'claude 3 opus';
+    targetName = 'claude opus 4.6';
+  } else if (id.includes('gemini') && id.includes('pro')) {
+    targetName = 'gemini 3.1 pro (high)';
+  } else if (id.includes('gemini') && id.includes('flash')) {
+    targetName = 'gemini 3 flash';
+  } else if (id.includes('gpt')) {
+    targetName = 'gpt-oss 120b';
   }
 
   try {
