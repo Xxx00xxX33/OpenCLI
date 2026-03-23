@@ -239,6 +239,69 @@ describe('public commands E2E', () => {
     }
   }, 30_000);
 
+  it('v2ex node returns topics for a given node', async () => {
+    const { stdout, code } = await runCli(['v2ex', 'node', 'python', '--limit', '3', '-f', 'json']);
+    // V2EX may rate-limit; only assert when successful
+    if (code === 0) {
+      const data = parseJsonOutput(stdout);
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBeGreaterThanOrEqual(1);
+      expect(data.length).toBeLessThanOrEqual(3);
+      expect(data[0]).toHaveProperty('title');
+      expect(data[0]).toHaveProperty('author');
+      expect(data[0]).toHaveProperty('url');
+    }
+  }, 30_000);
+
+  it('v2ex user returns topics by username', async () => {
+    const { stdout, code } = await runCli(['v2ex', 'user', 'Livid', '--limit', '3', '-f', 'json']);
+    if (code === 0) {
+      const data = parseJsonOutput(stdout);
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBeGreaterThanOrEqual(1);
+      expect(data.length).toBeLessThanOrEqual(3);
+      expect(data[0]).toHaveProperty('title');
+      expect(data[0]).toHaveProperty('node');
+      expect(data[0]).toHaveProperty('url');
+    }
+  }, 30_000);
+
+  it('v2ex member returns user profile', async () => {
+    const { stdout, code } = await runCli(['v2ex', 'member', 'Livid', '-f', 'json']);
+    if (code === 0) {
+      const data = parseJsonOutput(stdout);
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBe(1);
+      expect(data[0].username).toBe('Livid');
+    }
+  }, 30_000);
+
+  it('v2ex replies returns topic replies', async () => {
+    const { stdout, code } = await runCli(['v2ex', 'replies', '1000', '--limit', '3', '-f', 'json']);
+    if (code === 0) {
+      const data = parseJsonOutput(stdout);
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBeGreaterThanOrEqual(1);
+      expect(data.length).toBeLessThanOrEqual(3);
+      expect(data[0]).toHaveProperty('author');
+      expect(data[0]).toHaveProperty('content');
+    }
+  }, 30_000);
+
+  it('v2ex nodes returns node list sorted by topics', async () => {
+    const { stdout, code } = await runCli(['v2ex', 'nodes', '--limit', '5', '-f', 'json']);
+    if (code === 0) {
+      const data = parseJsonOutput(stdout);
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBe(5);
+      expect(data[0]).toHaveProperty('name');
+      expect(data[0]).toHaveProperty('title');
+      expect(data[0]).toHaveProperty('topics');
+      // Verify descending sort by topic count
+      expect(Number(data[0].topics)).toBeGreaterThanOrEqual(Number(data[data.length - 1].topics));
+    }
+  }, 30_000);
+
   // ── xiaoyuzhou (Chinese site — may return empty on overseas CI runners) ──
   it('xiaoyuzhou podcast returns podcast profile', async () => {
     const { stdout, stderr, code } = await runCli(['xiaoyuzhou', 'podcast', '6013f9f58e2f7ee375cf4216', '-f', 'json']);
